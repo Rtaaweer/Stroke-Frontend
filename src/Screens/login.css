@@ -1,0 +1,30 @@
+.gradient-form {
+    background-color: #f0f0f0;
+  }
+  
+  .gradient-custom-2 {
+    background: linear-gradient(135deg, #ee7724, #d8363a, #dd3675, #b44593);
+    border-top-right-radius: 0.3rem;
+    border-bottom-right-radius: 0.3rem;
+    color: white;
+  }
+  
+  .btn-primary {
+    background-color: #d8363a;
+    border-color: #d8363a;
+  }
+  
+  .btn-outline-danger {
+    border-color: #d8363a;
+    color: #d8363a;
+  }
+  
+  .btn-outline-danger:hover {
+    background-color: #d8363a;
+    color: white;
+  }
+  
+  .vh-100 {
+    height: 100vh;
+  }
+  
