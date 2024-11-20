@@ -70,7 +70,7 @@ const Registro = () => {
                   <div className="card-body p-md-5 mx-md-4">
                     <div className="text-center">
                       <img
-                        src="/logo-stroke.png"
+                        src="/Stroke.png"
                         style={{ width: '120px' }}
                         alt="logo"
                         className="mb-4"

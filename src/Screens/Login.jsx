@@ -28,32 +28,30 @@ const Login = () => {
 
   const navigate = useNavigate();
     // Función para manejar el envío del formulario
-    const handleSubmit = (e) => {
-      e.preventDefault(); // Evitar el envío predeterminado del formulario
-      axios.post('http://localhost:3001/login', formData)
-        .then(({ data }) => {
-          sessionStorage.setItem('id_us', data.id_us);
-          Swal.fire({
-            title: "<strong>¡Excelente!</strong>",
-            html: `<i>El usuario con el correo <strong>${formData.correo}</strong> fue encontrado con éxito</i>`,
-            icon: "success",
-            timer: 8000
-          }).then(() => {
-            navigate('/home'); // Redirigir a la ruta /home
-          });
-        })
-        .catch(({ response }) => {
-          if (response.data === "Usuario no encontrado") {
-            limpiarCampos(); // Asegúrate de que esta función esté definida
-            Swal.fire({
-              title: "<strong>¡Noo!</strong>",
-              html: `<i>Los datos ingresados son incorrectos</i>`,
-              icon: "error",
-              timer: 8000
-            });
-          }
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      try {
+        const { data } = await axios.post('http://localhost:3001/login', formData);
+        sessionStorage.setItem('id_us', data.id_us);
+        Swal.fire({
+          title: "<strong>¡Excelente!</strong>",
+          html: `<i>El usuario con el correo <strong>${formData.correo}</strong> fue encontrado con éxito</i>`,
+          icon: "success",
+          timer: 8000
+        }).then(() => {
+          navigate('/home'); // Redirigir a la ruta /home
         });
-    };  
+      } catch (error) {
+        const errorMsg = error?.response?.data || 'Error de conexión con el servidor';
+        Swal.fire({
+          title: "<strong>¡Noo!</strong>",
+          html: `<i>${errorMsg}</i>`,
+          icon: "error",
+          timer: 8000
+        });
+        limpiarCampos(); // Limpia los campos después del error
+      }
+    };
 
   return (
     <section className="gradient-form d-flex justify-content-center align-items-center vh-100">
