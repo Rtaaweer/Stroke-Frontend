@@ -1,0 +1,24 @@
+
+  
+  .header-logo img {
+    height: 50px;
+  }
+  
+  .header-menu ul {
+    display: flex;
+    gap: 2rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+  
+  .header-menu a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .header-menu a:hover {
+    color: #007bff;
+  }
+  
+  
