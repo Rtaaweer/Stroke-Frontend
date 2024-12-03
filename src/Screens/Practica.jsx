@@ -4,11 +4,23 @@ import Axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css'; 
 import { Link } from "react-router-dom";
-import './login.css'; 
+import './login.css';
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/auth";
 
 
 const Practica = () => {
   const [data, setData] = useState([]); // Cambiamos formData a un array
+
+  const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();  
+
+  useEffect(() => {
+    if (!user && location.pathname !== "/") {
+      navigate("/");
+    }
+  }, [user, location, navigate]);
 
   const getUser = () => {
     const id_us = sessionStorage.getItem('id_us');

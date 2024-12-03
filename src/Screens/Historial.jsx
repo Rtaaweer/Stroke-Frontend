@@ -1,40 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import Header from '../components/Header';   
-import Axios from "axios";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import Header from '../components/Header';
+import { useAuth } from '../context/auth'; // Usa el contexto de autenticación
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Historial = () => {
-  const [data, setData] = useState([]); // Cambiamos formData a un array
+  const [data, setData] = useState([]); // Para almacenar los análisis
+  const { userId } = useAuth(); // Obtén el ID del usuario desde el contexto
+  const db = getFirestore(); // Inicializa Firestore
 
-  const getUser = () => {
-    const id_us = sessionStorage.getItem('id_us');
-    if (id_us) {
-      Axios.get("http://localhost:3001/history", {
-        params: { id_us: id_us }
-      })
-      .then((response) => {
-        setData(response.data); // Guardar múltiples registros
-      })
-      .catch((error) => {
-        console.error("Error al obtener los datos del usuario:", error);
-      });
+  const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();  
+
+  useEffect(() => {
+    if (!user && location.pathname !== "/") {
+      navigate("/");
+    }
+  }, [user, location, navigate]);
+
+  // Función para obtener los análisis del usuario autenticado
+  const getUserHistory = async () => {
+    if (userId) { // Asegúrate de que el usuario esté autenticado
+      try {
+        // Crea una consulta a la colección "analyses"
+        const q = query(collection(db, 'analyses'), where('userId', '==', userId));
+        console.log(userId);
+        
+        const querySnapshot = await getDocs(q);
+
+        // Mapea los documentos para convertirlos en un array de objetos
+        const userHistory = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setData(userHistory); // Guarda los datos en el estado
+      } catch (error) {
+        console.error('Error al obtener los datos del historial:', error);
+      }
     }
   };
 
+  // Usa useEffect para cargar los datos al montar el componente
   useEffect(() => {
-    getUser();
-  }, []);
+    getUserHistory();
+  }, [userId]); // Se ejecutará nuevamente si cambia el ID del usuario
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
+  const formatDate = (timestamp) => {
+    const date = timestamp.toDate(); // Convierte el Timestamp de Firestore a un objeto Date
     return new Intl.DateTimeFormat('es-ES', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
+      dateStyle: 'long',
+      timeStyle: 'short', // Incluye hora
     }).format(date);
   };
-
+  
   return (
     <div className="home-container w-[1520px]">
       <Header />
@@ -45,21 +65,23 @@ const Historial = () => {
 
         {/* Contenedor para la tarjeta y la imagen */}
         <div className="d-flex flex-row justify-content-between w-100">
-
           {/* Renderizar tarjetas dinámicamente */}
           <div className="d-flex flex-column">
             {data.map((item, index) => (
-              <div key={index} className="card" 
-              style={{ 
-                width: '40rem', 
-                height: '13rem',
-                marginBottom: '20px', 
-                marginLeft: '80px' ,
-                backgroundColor: '#3f5866',
-                color: '#fff',
-                fontSize: '18px',
-                borderRadius: '30px'
-                }}>
+              <div
+                key={index}
+                className="card"
+                style={{
+                  width: '40rem',
+                  height: '13rem',
+                  marginBottom: '20px',
+                  marginLeft: '80px',
+                  backgroundColor: '#3f5866',
+                  color: '#fff',
+                  fontSize: '18px',
+                  borderRadius: '30px',
+                }}
+              >
                 <div className="card-body">
                   <div className="row">
                     {/* Columna izquierda con porcentaje */}
@@ -78,15 +100,16 @@ const Historial = () => {
                           fontWeight: 'bold',
                         }}
                       >
-                        {item.porcentaje}
+                        {item.legibilityScore.toFixed(2)}% 
                       </div>
                     </div>
 
-                    {/* Columna derecha con nombre y fecha */}
+                    {/* Columna derecha con texto y fecha */}
                     <div className="col-7 d-flex align-items-center">
                       <p className="mb-0">
-                        <strong>{item.nombre}</strong><br />
-                        Hecho el {formatDate(item.fecha)} {/* Fecha formateada */}
+                        <strong>Ver texto analizado.</strong>
+                        <br />
+                        Hecho el {formatDate(item.createdAt)} {/* Formatear fecha */}
                       </p>
                     </div>
                   </div>
@@ -99,12 +122,18 @@ const Historial = () => {
           <div className="fixed-image ">
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg"
-              alt="Imagen de la plataforma" 
-              style={{ maxWidth: '300px', maxHeight: 'auto', borderRadius: '10px',   marginRight: '35%', marginTop: '150px'}}
+              alt="Imagen de la plataforma"
+              style={{
+                maxWidth: '300px',
+                maxHeight: 'auto',
+                borderRadius: '10px',
+                marginRight: '35%',
+                marginTop: '150px',
+              }}
             />
           </div>
         </div>
-      </main> 
+      </main>
     </div>
   );
 };

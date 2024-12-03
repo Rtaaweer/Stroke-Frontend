@@ -1,10 +1,44 @@
+import { doc, setDoc, Timestamp } from "firebase/firestore";
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import Tesseract from 'tesseract.js';
+import { useAuth } from "../context/auth"; // Asegúrate de que este contexto gestione el usuario
+import { dbFirestore } from "../firebase/firebase"; // Asegúrate de que la ruta sea correcta
+
 
 const HandwritingAnalysis = ({ imageUrl }) => {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const { user } = useAuth()
+
+  const saveAnalysisToFirestore = async (result) => {
+    if (!user) {
+      console.error("Usuario no autenticado");
+      return;
+    }
+
+    try {
+      console.log('usuario logeado que se analizara: ', user.uid);
+      
+      const uniqueId = Date.now().toString(); // Generar un ID único
+      const analysisData = {
+        id: uniqueId,
+        userId: user.uid,
+        legibilityScore: result.legibilityScore,
+        originalText: result.originalText,
+        suggestions: result.improvements,
+        createdAt: Timestamp.now(),
+      };
+
+      // Guardar en la colección "analyses"
+      await setDoc(doc(dbFirestore, "analyses", uniqueId), analysisData);
+
+      console.log("Análisis guardado con éxito:", analysisData);
+    } catch (error) {
+      console.error("Error al guardar el análisis en Firestore:", error);
+    }
+  };
+
 
   const analyzeHandwriting = async () => {
     setIsAnalyzing(true);
@@ -22,11 +56,14 @@ const HandwritingAnalysis = ({ imageUrl }) => {
 
       const legibilityMetrics = calculateLegibility(text);
       
-      setAnalysisResult({
+      const result = {
         originalText: text,
         legibilityScore: legibilityMetrics.score,
-        improvements: legibilityMetrics.suggestions
-      });
+        improvements: legibilityMetrics.suggestions,
+      };
+
+      setAnalysisResult(result);
+      await saveAnalysisToFirestore(result);
 
       Swal.fire({
         title: 'Análisis Completado',
@@ -42,6 +79,7 @@ const HandwritingAnalysis = ({ imageUrl }) => {
       });
     } finally {
       setIsAnalyzing(false);
+      
     }
   };
 
@@ -118,6 +156,7 @@ const HandwritingAnalysis = ({ imageUrl }) => {
       <button 
         onClick={analyzeHandwriting} 
         disabled={isAnalyzing}
+        id='analyze'
         className="btn btn-primary"
       >
         {isAnalyzing ? 'Analizando...' : 'Analizar Escritura'}

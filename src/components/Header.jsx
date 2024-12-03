@@ -12,6 +12,7 @@ const Header = () => {
   const handleLogout = async () => {
     try {
        await logout()
+       sessionStorage.clear();
        navigate('/')
     } catch (error) {
         console.log(error);

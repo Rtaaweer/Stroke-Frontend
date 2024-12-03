@@ -1,8 +1,21 @@
 
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
+import { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/auth";
 
 const Home = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!user && location.pathname !== "/") {
+      navigate("/");
+    }
+  }, [user, location, navigate]);
+  
   return (
     <div className="home-container w-[1520px]">
       <Header /> 

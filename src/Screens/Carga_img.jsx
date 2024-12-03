@@ -4,11 +4,24 @@ import Swal from "sweetalert2";
 import Header from "../components/Header";
 import HandwritingAnalysis from "./HandwritingAnalysis";
 import AnalysisInterface from "./AnalysisInterface";
+import {Helmet} from "react-helmet";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/auth";
 
 const Carga_img = () => {
   const [img, setImg] = useState(null); // Para almacenar el archivo seleccionado
   const [urlImg, setUrlImg] = useState(""); // Para almacenar la URL de Cloudinary
   const [id_us, setUserId] = useState("");
+
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!user && location.pathname !== "/") {
+      navigate("/");
+    }
+  }, [user, location, navigate]);
 
   useEffect(() => {
     const id = sessionStorage.getItem("id_us");
@@ -201,6 +214,9 @@ const Carga_img = () => {
           />
         </div>
       </main> */}
+      <Helmet>
+          <title>Carga de Imagen</title>
+      </Helmet>
       <AnalysisInterface></AnalysisInterface>
       {/* {urlImg && <HandwritingAnalysis imageUrl={urlImg} />} */}
     </div>

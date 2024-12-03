@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useAuth } from '../context/auth';
 import Logo from '../assets/Stroke.png';
-
+import {Helmet} from "react-helmet";
 
 
 const Registro = () => {
@@ -106,9 +106,12 @@ const Registro = () => {
     }
   };
   
-
+ 
   return (
     <section className="gradient-form d-flex justify-content-center align-items-center vh-100 w-screen">
+      <Helmet>
+          <title>Crea tu cuenta en Stroke</title>
+      </Helmet>
       <div className="container py-5">
         <div className="row justify-content-center align-items-center">
           <div className="col-lg-10 col-md-8 col-sm-12">

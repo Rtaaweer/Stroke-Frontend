@@ -1,16 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Helmet } from "react-helmet";
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Logo from '../assets/Stroke.png';
 import { useAuth } from '../context/auth'; // Importar el contexto
+
 const Login = () => {
   const [formData, setFormData] = useState({
     correo: '',
     password: '',
   });
   const [isForgotPassword, setIsForgotPassword] = useState(false); // Manejo de "Olvidaste tu contraseña"
-  const { login, resetPassword, logInWithGoogle } = useAuth(); // Funciones del contexto
+  const { login, resetPassword, logInWithGoogle, user } = useAuth(); // Funciones del contexto
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Si ya está autenticado, redirigir a la página principal
+    
+    // Deshabilitar el botón de retroceder
+    window.history.pushState(null, "", window.location.href);
+    window.onpopstate = function () {
+      window.history.pushState(null, "", window.location.href);
+    };
+
+  }, [user, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,7 +84,11 @@ const Login = () => {
   };
 
   return (
+
     <section className="gradient-form d-flex justify-content-center align-items-center vh-100  w-screen">
+      <Helmet>
+          <title>Inicia sesión en Stroke</title>
+      </Helmet>
       <div className="container py-5">
         <div className="row justify-content-center align-items-center">
           <div className="col-lg-10 col-md-8 col-sm-12">

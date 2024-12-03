@@ -16,10 +16,12 @@
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "firebase": "^11.0.2",
+    "firebase-admin": "^13.0.1",
     "fs": "^0.0.1-security",
     "lucide-react": "^0.460.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-helmet": "^6.1.0",
     "react-icons": "^5.3.0",
     "react-router-dom": "^6.27.0",
     "react-scripts": "5.0.1",
@@ -31,7 +33,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "mocha --timeout 10000 'test/**/*.test.mjs'",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -54,7 +56,11 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
+    "chai": "^4.5.0",
+    "chromedriver": "^131.0.1",
+    "mocha": "^10.8.2",
     "postcss": "^8.4.49",
+    "selenium-webdriver": "^4.27.0",
     "tailwindcss": "^3.4.15"
   }
 }

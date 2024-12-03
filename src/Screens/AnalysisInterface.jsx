@@ -187,6 +187,7 @@ const AnalysisInterface = () => {
                 <label className="block">
                   <input
                     type="file"
+                    id="file-input"
                     className="block w-full text-sm text-gray-500
                              file:mr-4 file:py-2 file:px-4
                              file:rounded-md file:border-0
@@ -216,6 +217,7 @@ const AnalysisInterface = () => {
                          transition-colors duration-200"
                 onClick={handleAnalyze}
                 disabled={!selectedFile}
+                id="analizar"
                 type="button"
               >
                 Analyze Image

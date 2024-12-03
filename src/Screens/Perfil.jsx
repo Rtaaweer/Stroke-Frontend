@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase"; // Importa tu instancia de auth de Firebase
 import Axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/auth";
 
 const Perfil = () => {
+
+  const { user } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();  
+
+  useEffect(() => {
+    if (!user && location.pathname !== "/") {
+      navigate("/");
+    }
+  }, [user, location, navigate]);
+
  
   const [formData, setFormData] = useState({
     nombre: '',
